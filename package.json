@@ -2,7 +2,7 @@
   "name": "nlidb-query",
   "version": "0.1.0",
   "description": "Used to query a database according to formal representation of natural language query",
-  "main": "nlidb-query.js",
+  "main": "lib/nlidb-query.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/rmdm/nlidb-query"
