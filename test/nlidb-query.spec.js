@@ -1,15 +1,17 @@
-var nlidb_query = require('../lib/nlidb-core')(null, null, null); //tested here methods do not depends on args
+var nlidb_query = require('../lib/nlidb-query')(null, null, null); //tested here methods do not depends on args
 
 describe('Set of methods to complete querying db according to some formal representation', function(){
 
-  var rel = {rel: 'rel1', kvf:[{k: 'k1'}, {k: 'k2', v: 'v2'}, {k: 'k2', v: 'v_2'}, {k: 'k3', v: 'v3', f: ['f3']}, {k: k4, f: ['f4', 'f_4']}]};
+  var rel = {rel: 'rel1', kvf:[{k: 'k1'}, {k: 'k2', v: 'v2'}, {k: 'k2', v: 'v_2'}, {k: 'k3', v: 'v3', f: ['f3']}, {k: 'k4', f: ['f4', 'f_4']}]};
   var copy = nlidb_query.copyOf(rel);
   
   function cmpRels(expect, rel1, rel2){
     expect(rel1).not.toBe(rel2);
     expect(rel1.rel).toBe(rel2.rel);
     expect(rel1.kvf).not.toBe(rel2.kvf);
-    expect(rel1.kvf[0]).toBe(rel2.kvf[0]); //elements of an array still can be the same
+    expect(rel1.kvf[0].k).toBe(rel2.kvf[0].k); //elements of an array still can be the same
+    expect(rel1.kvf[0].v).toBe(rel2.kvf[0].v);
+    expect(rel1.kvf[0].f).toBe(rel2.kvf[0].f);
   }
   
   it('copyOf() method used to make a copy of formal representation part - relation', function(){    
