@@ -2,7 +2,10 @@ var nlidb_query = require('../lib/nlidb-query')(null, null, null);
 
 describe('Set of methods to complete querying db according to some formal representation', function(){
   
-  var funcs;
+  var funcs, opt;
+  var PassThrough = require('stream').PassThrough;
+  var UniqueFilterStream = require('../lib/streams/uniqueFilterStream');
+  var ProjectStream = require('../lib/streams/projectStream');
   
   beforeEach(function () {
     funcs = {
@@ -12,6 +15,13 @@ describe('Set of methods to complete querying db according to some formal repres
           _flush: function () {}
         };
       }
+    };
+    opt = {
+      db: {
+        streamData: function () { return new PassThrough(); }
+      },
+      functions: funcs,
+      links: {A: {A: {a: 'a'}}}
     };
   });
   
@@ -62,32 +72,47 @@ describe('Set of methods to complete querying db according to some formal repres
   it('has function buildFunctionalPlumbing to build part of stream chain', function () {
     var rel = {rel: 'A', kvf: []};
     var res = nlidb_query.buildFunctionalPlumbing(rel, {functions: funcs});
-    var PassThrough = require('stream').PassThrough;
     expect(res.head).toBe(res.tail);
     expect(res.head instanceof PassThrough).toBe(true);
     expect(res.tail instanceof PassThrough).toBe(true);
     
     var rel = {rel: 'A', kvf: [{k: 'k1', f: ['f1']}]};
     var res = nlidb_query.buildFunctionalPlumbing(rel, {functions: funcs});
-    var PassThrough = require('stream').PassThrough;
     expect(res.head).toBe(res.tail);
     expect(res.head instanceof PassThrough).toBe(false);
     expect(res.tail instanceof PassThrough).toBe(false);
     
     var rel = {rel: 'A', kvf: [{k: 'k1', f: ['f1']}, {k: 'k2', f: ['f1']}]};
     var res = nlidb_query.buildFunctionalPlumbing(rel, {functions: funcs});
-    var PassThrough = require('stream').PassThrough;
     expect(res.head).not.toBe(res.tail);
     expect(res.head instanceof PassThrough).toBe(false);
     expect(res.tail instanceof PassThrough).toBe(false);
   });
   
-  it('has function streamRelation to make a stream of current relation', function () {
+  it('has function streamRelation to make a stream of current relation', function () {    
+    var rel = {rel: 'A', kvf: [{k: 'k1', v: 'v1'}]};
+    var res = nlidb_query.streamRelation(rel, opt);
+    expect(res instanceof ProjectStream).toBe(true);
     
+    opt.last = true;
+    var res = nlidb_query.streamRelation(rel, opt);
+    expect(res instanceof UniqueFilterStream).toBe(true);
+    
+    opt.streamFrom = new PassThrough();
+    opt.streamFrom.rel = 'A';
+    var res = nlidb_query.streamRelation(rel, opt);
+    expect(res instanceof UniqueFilterStream).toBe(true);
   });
   
   it('has function buildStreamChains', function () {
-    
+    var query = [
+      [{rel: 'A', kvf: [{k: 'k1'}]}], 
+      [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}], 
+      [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}],
+      [{rel: 'A', kvf: [{k: 'k1'}]}]
+    ];
+    var res = nlidb_query.buildStreamChains(query, opt);
+    expect(res.length).toBe(6);
   });
     
 });
