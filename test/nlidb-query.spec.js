@@ -1,4 +1,4 @@
-var nlidb_query = require('../lib/nlidb-query')(null, null, null); 
+var nlidb_query = new (require('../lib/nlidb-query'))(null, null, null); 
 
 describe('Set of methods to complete querying db according to some formal representation', function(){
   
