@@ -1,6 +1,6 @@
 {
   "name": "nlidb-query",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Used to query a database according to formal representation of natural language query",
   "main": "lib/nlidb-query.js",
   "repository": {
