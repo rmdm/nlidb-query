@@ -1,4 +1,5 @@
-var nlidb_query = new (require('../lib/nlidb-query'))(null, null, null); 
+var NlidbQuery = require('../lib/nlidb-query'); 
+var nlidb_query = new NlidbQuery({streamData: function () {}}, null, null); 
 
 describe('Set of methods to complete querying db according to some formal representation', function(){
   
@@ -58,6 +59,20 @@ describe('Set of methods to complete querying db according to some formal repres
     expect(res.length).toBe(6);
     var res = nlidb_query.collectManyLevelResults([[1], [2, 3], [3, 4, 5], [6, 7, 8, 9], [10, 11, 12, 13, 14]], onNextLvl);
     expect(res.length).toBe(120);
+    
+  });
+  
+  it('static "isEmpty" checks meaning of results', function(){    
+    
+    function isEmpty (stuff, shouldBe) {
+      expect(NlidbQuery.isEmpty(stuff)).toBe(shouldBe);
+    }
+    
+    isEmpty([], true);
+    isEmpty([[]], true);
+    isEmpty({}, true);
+    isEmpty(function() {}, true);
+    isEmpty([[1]], false);    
     
   });
   
