@@ -1,9 +1,8 @@
-var NlidbQuery = require('../lib/nlidb-query'); 
-var nlidb_query = new NlidbQuery({streamData: function () {}}, null, null); 
+var NlidbQuery = require('../lib/nlidb-query');
 
 describe('Set of methods to complete querying db according to some formal representation', function(){
   
-  var funcs, opt;
+  var nlidb_query;
   var PassThrough = require('stream').PassThrough;
   var UniqueFilterStream = require('../lib/streams/uniqueFilterStream');
   var ProjectStream = require('../lib/streams/projectStream');
@@ -17,13 +16,9 @@ describe('Set of methods to complete querying db according to some formal repres
         };
       }
     };
-    opt = {
-      db: {
+    nlidb_query = new NlidbQuery({
         streamData: function () { return new PassThrough(); }
-      },
-      functions: funcs,
-      links: {A: {A: {a: 'a'}}}
-    };
+      }, {A: {A: {a: 'a'}}}, funcs); 
   });
   
   it('ueses collectManyLevelResults function to build stream chains', function(){
@@ -106,16 +101,15 @@ describe('Set of methods to complete querying db according to some formal repres
   
   it('has function streamRelation to make a stream of current relation', function () {    
     var rel = {rel: 'A', kvf: [{k: 'k1', v: 'v1'}]};
-    var res = nlidb_query.streamRelation(rel, opt);
+    var res = nlidb_query.streamRelation(rel);
     expect(res instanceof ProjectStream).toBe(true);
     
-    opt.last = true;
-    var res = nlidb_query.streamRelation(rel, opt);
+    var res = nlidb_query.streamRelation(rel, true);
     expect(res instanceof UniqueFilterStream).toBe(true);
     
-    opt.streamFrom = new PassThrough();
-    opt.streamFrom.rel = 'A';
-    var res = nlidb_query.streamRelation(rel, opt);
+    var streamFrom = new PassThrough();
+    streamFrom.rel = 'A';
+    var res = nlidb_query.streamRelation(rel, true, streamFrom);
     expect(res instanceof UniqueFilterStream).toBe(true);
   });
   
@@ -126,7 +120,7 @@ describe('Set of methods to complete querying db according to some formal repres
       [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}],
       [{rel: 'A', kvf: [{k: 'k1'}]}]
     ];
-    var res = nlidb_query.buildStreamChains(query, opt);
+    var res = nlidb_query.buildStreamChains(query);
     expect(res.length).toBe(6);
   });
     
