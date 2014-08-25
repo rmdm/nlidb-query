@@ -14,11 +14,14 @@ describe('Set of methods to complete querying db according to some formal repres
           _transform: function () {},
           _flush: function () {}
         };
+      },
+      get: function (f) {
+        return this[f];
       }
     };
     nlidb_query = new NlidbQuery({
         streamData: function () { return new PassThrough(); }
-      }, {A: {A: {a: 'a'}}}, funcs); 
+      }, function () {return {a: 'a'};}, funcs); 
   });
   
   it('ueses collectManyLevelResults function to build stream chains', function(){
