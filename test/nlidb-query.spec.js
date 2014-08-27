@@ -121,10 +121,20 @@ describe('Set of methods to complete querying db according to some formal repres
       [{rel: 'A', kvf: [{k: 'k1'}]}], 
       [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}], 
       [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}],
-      [{rel: 'A', kvf: [{k: 'k1'}]}]
+      [{rel: 'A', kvf: [{k: 'k1', v: 'v1'}]}]
     ];
     var res = nlidb_query.buildStreamChains(query);
     expect(res.length).toBe(6);
+  });
+    
+  it('will throw too broad query when stating reqpresentation falls to empty object', function () {
+    var query = [
+      [{rel: 'A', kvf: [{k: 'k1'}]}], 
+      [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}], 
+      [{rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}, {rel: 'A', kvf: [{k: 'k1'}]}],
+      [{rel: 'A', kvf: [{k: 'k1'}]}]
+    ];
+    expect(function (){nlidb_query.buildStreamChains(query);}).toThrow();
   });
     
 });
